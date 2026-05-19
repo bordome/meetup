@@ -1,15 +1,17 @@
 .PHONY: start start-hot build clean deploy
 
+EMU_FLAGS = --import=./.firebase-data --export-on-exit
+
 start: node_modules backend/functions/node_modules .env
 	npm run build
 	@echo "==> http://localhost:5000"
-	firebase emulators:start
+	firebase emulators:start $(EMU_FLAGS)
 
 start-hot: node_modules backend/functions/node_modules .env
 	@echo "==> http://localhost:5000"
 	@trap 'kill 0' EXIT; \
 		cd backend/functions && npm run build:watch & \
-		firebase emulators:start
+		firebase emulators:start $(EMU_FLAGS)
 
 build:
 	cd backend/functions && npm run build
