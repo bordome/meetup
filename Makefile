@@ -1,17 +1,31 @@
-.PHONY: start start-hot build clean deploy
+.PHONY: start start-hot bot dev clean deploy
 
+FIREBASE = ./node_modules/.bin/firebase
 EMU_FLAGS = --import=./.firebase-data --export-on-exit
+
+# Full local stack: web app + bot polling
+dev: .env
+	@trap 'kill 0' EXIT; \
+		cd backend/functions && npm run build:watch & \
+		$(FIREBASE) emulators:start $(EMU_FLAGS) & \
+		sleep 5 && node bot/index.js & \
+		wait
 
 start: node_modules backend/functions/node_modules .env
 	npm run build
 	@echo "==> http://localhost:5000"
-	firebase emulators:start $(EMU_FLAGS)
+	$(FIREBASE) emulators:start $(EMU_FLAGS)
 
 start-hot: node_modules backend/functions/node_modules .env
 	@echo "==> http://localhost:5000"
 	@trap 'kill 0' EXIT; \
 		cd backend/functions && npm run build:watch & \
-		firebase emulators:start $(EMU_FLAGS)
+		$(FIREBASE) emulators:start $(EMU_FLAGS)
+
+# Telegram bot (polling) — run alongside emulators
+bot: .env
+	@echo "==> Polling @$(shell grep TELEGRAM_BOT_USERNAME .env | cut -d= -f2)"
+	node bot/index.js
 
 build:
 	cd backend/functions && npm run build
@@ -28,7 +42,11 @@ backend/functions/node_modules:
 
 deploy:
 	npm run build
-	firebase deploy
+	$(FIREBASE) deploy
 
 clean:
 	rm -rf node_modules backend/functions/node_modules backend/functions/lib
+
+# Also clean emulator data
+clean-data:
+	rm -rf .firebase-data
