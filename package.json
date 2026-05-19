@@ -1,0 +1,15 @@
+{
+  "name": "meetup",
+  "private": true,
+  "scripts": {
+    "build": "cd backend/functions && npm run build",
+    "emulators": "firebase emulators:start",
+    "deploy": "cd backend/functions && npm run build && firebase deploy",
+    "deploy:functions": "cd backend/functions && npm run build && firebase deploy --only functions",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "logs": "firebase functions:log"
+  },
+  "devDependencies": {
+    "firebase-tools": "^15.0.0"
+  }
+}
