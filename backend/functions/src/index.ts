@@ -30,14 +30,17 @@ app.get("/api/counter", async (_req: express.Request, res: express.Response) => 
 
 app.post("/api/counter/increment", async (req: express.Request, res: express.Response) => {
   try {
-    await db.doc(COUNTER_DOC).set(
-      { count: admin.firestore.FieldValue.increment(1) },
-      { merge: true },
-    );
-    const doc = await db.doc(COUNTER_DOC).get();
+    const ref = db.doc(COUNTER_DOC);
+    await db.runTransaction(async (t) => {
+      const doc = await t.get(ref);
+      const current = doc.exists ? (doc.data()?.count || 0) : 0;
+      t.set(ref, { count: current + 1 }, { merge: true });
+    });
+    const doc = await ref.get();
     const count = doc.data()?.count || 0;
     res.json({ count });
   } catch (e) {
+    console.error("increment error:", e);
     res.status(500).json({ error: "Failed to increment counter" });
   }
 });
