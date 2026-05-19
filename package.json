@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "build": "cd backend/functions && npm run build",
+    "dev": "firebase emulators:start",
     "emulators": "firebase emulators:start",
+    "tunnel": "echo 'Use: npx ngrok http 5000 --log=stdout'",
     "deploy": "cd backend/functions && npm run build && firebase deploy",
     "deploy:functions": "cd backend/functions && npm run build && firebase deploy --only functions",
     "deploy:hosting": "firebase deploy --only hosting",

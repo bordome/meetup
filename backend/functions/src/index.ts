@@ -1,18 +1,18 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import * as express from "express";
+import express = require("express");
 
 admin.initializeApp();
 
 const app = express();
 
 // Manual CORS headers
-app.use((_req, res, next) => {
-  res.set("Access-Control-Allow-Origin", "*");
-  res.set("Access-Control-Allow-Headers", "Content-Type");
+app.use((_req: express.Request, _res: express.Response, next: express.NextFunction) => {
+  _res.set("Access-Control-Allow-Origin", "*");
+  _res.set("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
-app.options("*", (_req, res) => res.status(204).send());
+app.options("*", (_req: express.Request, res: express.Response) => res.status(204).send());
 app.use(express.json());
 
 const db = admin.firestore();

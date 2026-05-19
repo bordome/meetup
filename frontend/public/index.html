@@ -61,7 +61,8 @@
     tg.ready();
     tg.expand();
 
-    const API_BASE = 'http://localhost:5001/meetup-barcher/us-central1/api';
+    // Uses Firebase Hosting rewrite: /api/* → Cloud Function
+const API_BASE = '';
 
     async function fetchCounter() {
       try {
