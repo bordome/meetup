@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+*.log
+.firebase/
+.cursor/
+.vscode/
+.idea/
+.DS_Store
+
+# Firebase service account keys
+*-firebase-adminsdk-*.json
