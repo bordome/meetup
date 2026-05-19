@@ -1,4 +1,4 @@
-.PHONY: start start-hot bot dev clean deploy
+.PHONY: start start-hot bot dev tunnel clean deploy
 
 FIREBASE = ./node_modules/.bin/firebase
 EMU_FLAGS = --import=./.firebase-data --export-on-exit
@@ -22,7 +22,19 @@ start-hot: node_modules backend/functions/node_modules .env
 		cd backend/functions && npm run build:watch & \
 		$(FIREBASE) emulators:start $(EMU_FLAGS)
 
-# Telegram bot (polling) — run alongside emulators
+# ngrok tunnel for Telegram testing
+tunnel:
+	@echo "==> Copy the https://...ngrok-free.app URL into BotFather"
+	ngrok http 5000
+
+# Full Telegram-ready stack: emulators + bot + tunnel
+dev-tg: .env
+	@trap 'kill 0' EXIT; \
+		cd backend/functions && npm run build:watch & \
+		$(FIREBASE) emulators:start $(EMU_FLAGS) & \
+		sleep 3 && node bot/index.js & \
+		sleep 2 && echo "" && ngrok http 5000 & \
+		wait
 bot: .env
 	@echo "==> Polling @$(shell grep TELEGRAM_BOT_USERNAME .env | cut -d= -f2)"
 	node bot/index.js
