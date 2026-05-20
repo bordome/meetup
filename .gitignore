@@ -12,3 +12,6 @@ lib/
 
 # Firebase service account keys
 *-firebase-adminsdk-*.json
+
+# Tunnel config (contains tokens)
+.frpc.toml

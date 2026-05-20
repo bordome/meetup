@@ -22,18 +22,20 @@ start-hot: node_modules backend/functions/node_modules .env
 		cd backend/functions && npm run build:watch & \
 		$(FIREBASE) emulators:start $(EMU_FLAGS)
 
-# ngrok tunnel for Telegram testing
+TUNNEL_URL = http://nbshtech.ru:8001
+
+# frp tunnel for Telegram testing (uses .frpc.toml)
 tunnel:
-	@echo "==> Copy the https://...ngrok-free.app URL into BotFather"
-	ngrok http 5000
+	@echo "==> Mini App URL: $(TUNNEL_URL) (paste this into BotFather)"
+	frpc -c .frpc.toml
 
 # Full Telegram-ready stack: emulators + bot + tunnel
-dev-tg: .env
+dev-tg: .env .frpc.toml
 	@trap 'kill 0' EXIT; \
 		cd backend/functions && npm run build:watch & \
 		$(FIREBASE) emulators:start $(EMU_FLAGS) & \
 		sleep 3 && node bot/index.js & \
-		sleep 2 && echo "" && ngrok http 5000 & \
+		sleep 2 && echo "" && echo "Mini App URL: $(TUNNEL_URL)" && frpc -c .frpc.toml & \
 		wait
 bot: .env
 	@echo "==> Polling @$(shell grep TELEGRAM_BOT_USERNAME .env | cut -d= -f2)"
