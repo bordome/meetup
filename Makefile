@@ -22,7 +22,7 @@ start-hot: node_modules backend/functions/node_modules .env
 		cd backend/functions && npm run build:watch & \
 		$(FIREBASE) emulators:start $(EMU_FLAGS)
 
-TUNNEL_URL = http://tunnel.nbshtech.ru:8001
+TUNNEL_URL = https://tunnel.nbshtech.ru
 
 # frp tunnel for Telegram testing (uses .frpc.toml)
 tunnel:
